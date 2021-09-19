@@ -4,8 +4,8 @@ function Header(props) {
   return (
     <header className="header background">
       <div className="header__logo"></div>
-      <p className="header__email">{props.currentEmail}</p>
-      <a className="header__exit" onClick={props.signOut}>Выйти</a>
+      <div className="header__email">{props.currentEmail}</div>
+      <div className="header__exit" onClick={props.signOut}>Выйти</div>
     </header>
   );
 }

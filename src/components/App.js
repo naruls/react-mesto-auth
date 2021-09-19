@@ -11,7 +11,7 @@ import InfoTooltip from "./InfoTooltip";
 import * as mestoAuth from '../utils/Auth.js';
 import ImagePopup from './ImagePopup.js';
 
-import {  Route, Redirect, Switch, withRouter, Link, useHistory } from 'react-router-dom';
+import {  Route, Redirect, Switch, withRouter, useHistory } from 'react-router-dom';
 
 
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
@@ -58,9 +58,9 @@ function App(props) {
     setAddPlacePopupOpen(true);
   }
 
-  {/*function handleConfirmClick() {
+  /*function handleConfirmClick() {
       setConfirmPopupOpen(true);
-  }*/}
+  }*/
 
  function handleLogin() {
     setLoggedIn(true);
@@ -158,8 +158,7 @@ function App(props) {
           if (res){
             setCurrentEmail(res.data.email);
             handleLogin();
-            props.history.push("/");
-            console.log(currentEmail)
+            history.push("/");
           }
         }).catch((err) => {
         console.log(err);

@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link, withRouter } from 'react-router-dom';
-import * as mestoAuth from '../utils/Auth.js';
 
 function Login(props) {
 
