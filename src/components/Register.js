@@ -1,5 +1,5 @@
 import React from 'react';
-import * as mestoAuth from './Auth.js';
+import * as mestoAuth from '../utils/Auth.js';
 import { Link, withRouter } from 'react-router-dom'; 
 
 function Register(props) {
@@ -18,21 +18,8 @@ function Register(props) {
 
   function handleSubmit(e) {
     e.preventDefault();
-    mestoAuth.register(email, password).then((res) => {
-        if(res){
-            props.history.push('/sign-in');
-            props.setInfoTooltipOpen(true);
-            props.setSuccesRegister(true);
-          }
-          else{
-          props.setInfoTooltipOpen(true);
-          props.setSuccesRegister(false);
-          }
-        })
-        .catch((err) =>{
-          console.log(err)
-        })
-      }
+    props.regiserAuth(email, password);
+  }
 
   return (
     <>

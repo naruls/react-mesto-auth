@@ -1,7 +1,5 @@
 import React from 'react';
-import PopupWithForm from './PopupWithForm.js';
 import Card from './Card.js';
-import ImagePopup from './ImagePopup.js';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 import Header from './Header.js';
 import Footer from './Footer.js';
@@ -13,11 +11,10 @@ function Main(props) {
 
   return (
     <>
-    <Header currentEmail={props.currentEmail}/>
+    <Header currentEmail={props.currentEmail} signOut={props.signOut}/>
     <main className="container">
       {/*<PopupWithForm name="confirm" title="Вы уверены?" formName="popupFormConfirm"  isOpen={props.isConfirmOpen} onClose={props.onClose}
       />*/}
-      <ImagePopup isOpen={props.isImageOpen} onClose={props.onClose} card={props.card}/>
       <section className="profile background">
         <img src={currentUser.avatar} className="profile__avatar" alt="Жак-Ив Кусто"/>
         <div className="profile__frontground" onClick={props.onEditAvatar}></div>

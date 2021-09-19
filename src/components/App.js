@@ -8,9 +8,10 @@ import EditAvatarPopup from './EditAvatarPopup.js';
 import AddPlacePopup from './AddPlacePopup.js';
 import ProtectedRoute from "./ProtectedRoute";
 import InfoTooltip from "./InfoTooltip";
-import * as mestoAuth from './Auth.js';
+import * as mestoAuth from '../utils/Auth.js';
+import ImagePopup from './ImagePopup.js';
 
-import {  Route, Redirect, Switch, withRouter } from 'react-router-dom';
+import {  Route, Redirect, Switch, withRouter, Link, useHistory } from 'react-router-dom';
 
 
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
@@ -22,13 +23,15 @@ function App(props) {
   const [isEditProfilePopupOpen, setEditProfilePopupOpen] = React.useState(false);
   const [isAddPlacePopupOpen, setAddPlacePopupOpen] = React.useState(false);
   const [isEditAvatarPopupOpen, setEditAvatarPopupOpen] = React.useState(false);
-  const [isConfirmPopupOpen, setConfirmPopupOpen] = React.useState(false);
+  /*const [isConfirmPopupOpen, setConfirmPopupOpen] = React.useState(false);*/
   const [isImagePopupOpen, setImagePopupOpen] = React.useState(false);
   const [currentUser, setCurrentUser] = React.useState({});
   const [selectedCard, setSelectedCard] = React.useState({});
   const [loggedIn, setLoggedIn] = React.useState(false);
   const [succesRegister, setSuccesRegister] = React.useState(false);
   const [isInfoTooltipOpen, setInfoTooltipOpen] = React.useState(false);
+
+  const history = useHistory();
 
 
 
@@ -59,19 +62,6 @@ function App(props) {
       setConfirmPopupOpen(true);
   }*/}
 
-  function tokenCheck() {
-      const jwt = localStorage.getItem('jwt');
-       if (jwt){
-        mestoAuth.getContent(jwt).then((res) => {
-          if (res){
-            setCurrentEmail(res.data.email);
-            handleLogin();
-            props.history.push("/");
-            console.log(currentEmail)
-          }
-        }); 
-      }
-    } 
  function handleLogin() {
     setLoggedIn(true);
   } 
@@ -86,7 +76,7 @@ function App(props) {
     setEditProfilePopupOpen(false);
     setAddPlacePopupOpen(false);
     setImagePopupOpen(false);
-    setConfirmPopupOpen(false);
+    /*setConfirmPopupOpen(false);*/
     setInfoTooltipOpen(false);
     setSelectedCard({});
   }
@@ -162,16 +152,58 @@ function App(props) {
   }
 
   React.useEffect(() => {
-    tokenCheck();
+      const jwt = localStorage.getItem('jwt');
+       if (jwt){
+        mestoAuth.getContent(jwt).then((res) => {
+          if (res){
+            setCurrentEmail(res.data.email);
+            handleLogin();
+            props.history.push("/");
+            console.log(currentEmail)
+          }
+        }).catch((err) => {
+        console.log(err);
+      });
+      }
   }, []);
+
+  function signOut(){
+    localStorage.removeItem('jwt');
+    history.push('/sign-in');
+  }
+
+  function loginAuth(email, password){
+    mestoAuth.authorize(email, password).then((data) => {
+    if (data.token){
+      setCurrentEmail(email);
+      handleLogin();
+      history.push('/mesto');
+    }  
+  })
+  .catch(err => console.log(err));
+  }
+
+  function regiserAuth(email, password){
+    mestoAuth.register(email, password).then((res) => {
+      if(res){
+        history.push('/sign-in');
+        setInfoTooltipOpen(true);
+        setSuccesRegister(true);
+        }
+      else{
+        setInfoTooltipOpen(true);
+        setSuccesRegister(false);
+      }
+    })
+    .catch((err) =>{
+      console.log(err)
+    })
+  }
 
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <Switch>
-      <Route exact path="/">
-        {loggedIn ? <Redirect to="/mesto" /> : <Redirect to="/sign-in" />}
-      </Route> 
-      <ProtectedRoute path="/mesto"
+      <ProtectedRoute exact path="/"
       loggedIn={loggedIn}
       component={Main}
       onEditAvatar={handleEditAvatarClick} 
@@ -180,22 +212,25 @@ function App(props) {
         onCardClick={handleCardClick}
         onClose={closeAllPopups}
         cards={cards}
-        isImageOpen={isImagePopupOpen}
         onCardLike={handleCardLike}
         onCardDelete={handleCardDelete}
-        card={selectedCard}/>
         currentEmail={currentEmail}
+        signOut={signOut}/>
       <Route path="/sign-up">
-        <Register setInfoTooltipOpen={setInfoTooltipOpen} setSuccesRegister={setSuccesRegister}/>
+        <Register setInfoTooltipOpen={setInfoTooltipOpen} setSuccesRegister={setSuccesRegister} regiserAuth={regiserAuth}/>
       </Route>
       <Route path="/sign-in">
-        <Login handleLogin={handleLogin}/>
+        <Login handleLogin={handleLogin} loginAuth={loginAuth}/>
       </Route>
+      <Route path="/">
+        {loggedIn ? <Redirect to="/" /> : <Redirect to="/sign-in" />}
+      </Route> 
       </Switch>
       <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} onUpdateUser={handleUpdateUser}/> 
       <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} onUpdateAvatar={handleUpdateAvatar}/> 
       <AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closeAllPopups} onAddNewCard={handleAddPlaceSubmit}/>
       <InfoTooltip isInfoTooltipOpen={isInfoTooltipOpen} onClose={closeAllPopups} succesRegister={succesRegister}/>
+      <ImagePopup isOpen={isImagePopupOpen} onClose={closeAllPopups} card={selectedCard}/>
     </CurrentUserContext.Provider>
   );
 }

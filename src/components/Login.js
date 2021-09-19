@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, withRouter } from 'react-router-dom';
-import * as mestoAuth from './Auth.js';
+import * as mestoAuth from '../utils/Auth.js';
 
 function Login(props) {
 
@@ -18,15 +18,7 @@ function Login(props) {
 
   function handleSubmit(e) {
     e.preventDefault();
-    mestoAuth.authorize(email, password).then((data) => {
-    if (data.token){
-      setEmail('');
-      setPassword('');
-      props.handleLogin();
-      props.history.push('/mesto');
-    }  
-  })
-  .catch(err => console.log(err)); // запускается, если пользователь не найден
+    props.loginAuth(email, password);
 } 
 
   return (
